@@ -6,9 +6,12 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    loadTheme();
     ui->lvData->setSpacing(2);
     m_categoryid = -1;
     loadAllCateGories(ui->lvData);
+    addContextMenus();
+    loadMusters();
 }
 
 MainWindow::~MainWindow()
@@ -23,7 +26,8 @@ void MainWindow::loadAllCateGories(QListWidget* lvData,
     QList<DataCateGoryItem> stl;
     stl << newDataCateGoryItem(-1, "全部")
         << newDataCateGoryItem(-1, "最近")
-        << newDataCateGoryItem(-1, "常用");
+        << newDataCateGoryItem(-1, "常用")
+        << newDataCateGoryItem(-1, "集合");
     QSqlQuery qry;
     sqliteDao()->sqliteWrapper()->select("select * from category order by sxh", qry);
     while (qry.next())
@@ -98,6 +102,51 @@ void MainWindow::loadBookMarks(QString sql)
     ui->lvBookMark->setUpdatesEnabled(true);
 }
 
+void MainWindow::loadTheme(int index)
+{
+    QFile file(QApplication::applicationDirPath() + QString("/qss/%1.qss").arg(index));
+    file.open(QFile::ReadOnly);
+    this->setStyleSheet(file.readAll());
+    file.close();
+}
+
+void MainWindow::addContextMenus()
+{
+    QStringList menuNames;
+    menuNames << "新增" << "修改" << "删除";
+    for (int i = 0; i < menuNames.count(); i++)
+    {
+        QAction* act = new QAction(this);
+        act->setText(menuNames[i]);
+        connect(act, &QAction::triggered, this, &MainWindow::onLvGroupTriggered);
+        ui->lvGroup->addAction(act);
+    }
+}
+
+void MainWindow::loadMusters()
+{
+    ui->lvGroup->setSpacing(12);
+    QSqlQuery qry;
+    QString sql = "select * from muster order by id desc";
+    sqliteDao()->sqliteWrapper()->select(sql, qry);
+    ui->lvGroup->clear();
+    while (qry.next())
+    {
+        QListWidgetItem* item = new QListWidgetItem();
+        MusterWidget* w = new MusterWidget(this);
+        item->setData(Qt::UserRole + 1, qry.value("id").toInt());
+        w->setId(qry.value("id").toInt());
+        w->setText(qry.value("name").toString());
+        connect(w, &MusterWidget::onClick, this, &MainWindow::onMusterWidgetClick);
+        connect(w, &MusterWidget::onSelectedItem, this, &MainWindow::onMusterSelectedItem);
+        item->setSizeHint(QSize(128, 96));
+        w->setItem(item);
+        ui->lvGroup->addItem(item);
+        ui->lvGroup->setItemWidget(item, w);
+
+    }
+}
+
 void MainWindow::onItemClick()
 {
     DataCateGory* w = static_cast<DataCateGory*>(sender());
@@ -108,6 +157,12 @@ void MainWindow::onItemClick()
     {
         ui->wgtPages->setCurrentIndex(1);
         loadAllCateGories(ui->lvCategory, false, false, false);
+    }
+    else if (caption == "集合")
+    {
+        ui->wgtPages->setCurrentIndex(2);
+
+
     }
     else
     {
@@ -316,4 +371,87 @@ void MainWindow::on_edtSearch_returnPressed()
                      "or (b.name like '%"
                      + ui->edtSearch->text() + "%') order by a.id desc";
     loadBookMarks(m_bookmark_sql);
+}
+
+void MainWindow::onLvGroupTriggered()
+{
+    QAction* act = static_cast<QAction*>(sender());
+    if (act->text() == "新增")
+    {
+        EditMusterDialog* dlg = new EditMusterDialog();
+        dlg->setWindowTitle("新增");
+        int ret = dlg->exec();
+        if (ret == QDialog::Accepted)
+        {
+            dlg->addNewMuster();
+            loadMusters();
+
+        }
+        delete dlg;
+    }
+    else if (act->text() == "修改")
+    {
+        QListWidgetItem* item = ui->lvGroup->currentItem();
+        if (item == nullptr)
+        {
+            return;
+        }
+        EditMusterDialog* dlg = new EditMusterDialog();
+        dlg->setWindowTitle("修改");
+        dlg->setId(item->data(Qt::UserRole + 1).toInt());
+        int ret = dlg->exec();
+        if (ret == QDialog::Accepted)
+        {
+            dlg->editMuster();
+            loadMusters();
+
+        }
+        delete dlg;
+
+    }
+    else if (act->text() == "删除")
+    {
+        QListWidgetItem* item = ui->lvGroup->currentItem();
+        if (item == nullptr)
+        {
+            return;
+        }
+
+        int ret = QMessageBox::question(this, "提示", "是否删除选中项目?");
+        if (ret == QMessageBox::No)
+        {
+            return;
+        }
+
+        QString sql = QString("delete from muster where id=%1").arg(item->data(Qt::UserRole + 1).toInt());
+        sqliteDao()->sqliteWrapper()->execute(sql);
+        sql = QString("delete from muster_child where pid=%1").arg(item->data(Qt::UserRole + 1).toInt());
+        sqliteDao()->sqliteWrapper()->execute(sql);
+        loadMusters();
+
+    }
+
+
+
+}
+
+void MainWindow::onMusterWidgetClick(int id)
+{
+    QString sql = QString("select b.* from muster_child a "
+                          "left join bookmark b on a.sid=b.id "
+                          "where a.pid=%1").arg(id);
+    QSqlQuery qry;
+    sqliteDao()->sqliteWrapper()->select(sql, qry);
+    while (qry.next())
+    {
+        QString url = qry.value("url").toString();
+        QDesktopServices::openUrl(QUrl(url));
+        sql = QString("insert into bookmark_history(bid) values (%1)").arg(qry.value("id").toInt());
+        sqliteDao()->sqliteWrapper()->execute(sql);
+    }
+}
+
+void MainWindow::onMusterSelectedItem(QListWidgetItem* item)
+{
+    ui->lvGroup->setCurrentItem(item);
 }

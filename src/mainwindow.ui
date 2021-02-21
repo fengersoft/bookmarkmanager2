@@ -10,6 +10,12 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="baseSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
   <property name="font">
    <font>
     <family>微软雅黑</family>
@@ -26,9 +32,24 @@
   border:none;
 }</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
-     <widget class="QWidget" name="wgtTop" native="true">
+     <widget class="QWidget" name="wgtToolBar" native="true">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -44,23 +65,6 @@
          <property name="icon">
           <iconset resource="../app.qrc">
            <normaloff>:/res/add.png</normaloff>:/res/add.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>24</width>
-           <height>24</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="btnAddGroup">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../app.qrc">
-           <normaloff>:/res/addGroup.png</normaloff>:/res/addGroup.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -91,6 +95,15 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="styleSheet">
+          <string notr="true">#edtSearch
+{
+  border-radius:10px;
+  height:20px;
+  padding-left:10px;
+  border: 1px groove rgb(203,203,203);
+}</string>
+         </property>
          <property name="placeholderText">
           <string>搜索</string>
          </property>
@@ -115,10 +128,19 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">#lvData
+{
+   border-right:1px solid rgb(203,203,203);
+}</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QStackedWidget" name="wgtPages">
+        <property name="currentIndex">
+         <number>2</number>
+        </property>
         <widget class="QWidget" name="pageBookmarks">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
@@ -230,6 +252,30 @@
               <width>16777215</width>
               <height>16777215</height>
              </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="pageGroup">
+         <property name="styleSheet">
+          <string notr="true">#pageGroup
+{
+  
+	background-color: rgb(255, 255, 255);
+}</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QListWidget" name="lvGroup">
+            <property name="contextMenuPolicy">
+             <enum>Qt::ActionsContextMenu</enum>
+            </property>
+            <property name="resizeMode">
+             <enum>QListView::Adjust</enum>
+            </property>
+            <property name="viewMode">
+             <enum>QListView::IconMode</enum>
             </property>
            </widget>
           </item>

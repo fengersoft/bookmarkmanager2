@@ -1,4 +1,4 @@
-QT       += core gui sql network
+QT       += core gui sql network core5compat
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -35,10 +35,12 @@ SOURCES += \
     src/api/sql/sqlitedao.cpp \
     src/api/sql/sqlitewrapper.cpp \
     src/bookmark.cpp \
+    src/dialogs/editmusterdialog.cpp \
     src/editurldialog.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/showqrcodewindow.cpp
+    src/showqrcodewindow.cpp \
+    src/widgets/musterwidget.cpp
 
 HEADERS += \
     src/api/controls/category/datacategory.h \
@@ -61,17 +63,21 @@ HEADERS += \
     src/api/sql/sqlitedao.h \
     src/api/sql/sqlitewrapper.h \
     src/bookmark.h \
+    src/dialogs/editmusterdialog.h \
     src/editurldialog.h \
     src/mainwindow.h \
-    src/showqrcodewindow.h
+    src/showqrcodewindow.h \
+    src/widgets/musterwidget.h
 
 FORMS += \
     src/api/controls/category/datacategory.ui \
     src/api/controls/setvaluedialog.ui \
     src/bookmark.ui \
+    src/dialogs/editmusterdialog.ui \
     src/editurldialog.ui \
     src/mainwindow.ui \
-    src/showqrcodewindow.ui
+    src/showqrcodewindow.ui \
+    src/widgets/musterwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

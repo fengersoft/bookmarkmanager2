@@ -1,0 +1,12 @@
+#wgtToolBar
+{
+   
+	background-color: rgb(119, 25, 170);
+}
+#wgtToolBar QToolButton
+{
+  
+	background-color: rgba(255, 255, 255, 0);
+    
+	color: rgb(255, 255, 255);
+}

@@ -28,9 +28,10 @@ void BookMark::paintEvent(QPaintEvent* event)
 {
     QPainter painter;
     painter.begin(this);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+
     painter.setPen(QColor(197, 197, 197));
-    painter.drawRoundRect(rect(), 5, 5);
+    QRect rc = rect();
+    painter.drawRoundedRect(rc, 5, 5);
     QRect iconRc(52, 12, 24, 24);
     painter.drawPixmap(iconRc, m_icon, m_icon.rect());
     painter.setPen(Qt::black);

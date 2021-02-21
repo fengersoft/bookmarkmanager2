@@ -1,11 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>res/add.png</file>
-        <file>res/Ubuntu.qss</file>
         <file>res/ElegantDark.qss</file>
         <file>res/ie.png</file>
         <file>res/qrcode.png</file>
         <file>res/folder.png</file>
         <file>res/addGroup.png</file>
+        <file>res/muster.png</file>
     </qresource>
 </RCC>
